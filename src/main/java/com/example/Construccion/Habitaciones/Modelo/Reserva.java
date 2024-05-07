@@ -1,6 +1,6 @@
 package com.example.Construccion.Habitaciones.Modelo;
+import com.example.Construccion.Commons.Modelo.EstadoReserva;
 import com.example.Construccion.UsuariosPropietarios.Modelo.Estudiante;
-import com.example.Construccion.Commons.entity.EstadoReserva;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;

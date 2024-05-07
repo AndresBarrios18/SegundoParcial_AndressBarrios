@@ -3,6 +3,7 @@ package com.example.Construccion.Habitaciones.Controlador;
 import com.example.Construccion.Habitaciones.Modelo.Habitacion;
 import com.example.Construccion.Habitaciones.Servicios.HabitacionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,16 +57,16 @@ public class HabitacionController {
     public List<Habitacion> findAll() {
         return habitacionService.findAll();
     }
-    
+
     @PutMapping("/{id}/precio")
-    public ResponseEntity<String> actualizarPrecioHabitacion(@PathVariable("id") int id, @RequestParam("precio") double nuevoPrecio) {
-        Habitacion habitacion = habitacionService.buscarPorId(id);
-        if (habitacion != null) {
-            habitacion.setPrecio(nuevoPrecio);
-            habitacionService.guardar(habitacion);
+    public ResponseEntity<String> cambiarPrecioHabitacion(@PathVariable("id") int idHabitacion, @RequestParam("precio") double nuevoPrecio) {
+        try {
+            habitacionService.cambiarPrecioHabitacionPorId(idHabitacion, nuevoPrecio);
             return ResponseEntity.ok("Precio de la habitación actualizado correctamente");
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el precio de la habitación");
         }
     }
 }
