@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HabitacionService {
@@ -36,4 +37,15 @@ public class HabitacionService {
     public List<Habitacion> findAll() {
         return habitacionRepository.findAll();
     }
+    
+    @Transactional
+    public Habitacion buscarPorId(int id) {
+        return habitacionRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public Habitacion guardar(Habitacion habitacion) {
+        return habitacionRepository.save(habitacion);
+    }
 }
+

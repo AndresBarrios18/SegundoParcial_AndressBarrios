@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("api/v1/habitaciones")
@@ -54,5 +55,17 @@ public class HabitacionController {
     @GetMapping
     public List<Habitacion> findAll() {
         return habitacionService.findAll();
+    }
+    
+    @PutMapping("/{id}/precio")
+    public ResponseEntity<String> actualizarPrecioHabitacion(@PathVariable("id") int id, @RequestParam("precio") double nuevoPrecio) {
+        Habitacion habitacion = habitacionService.buscarPorId(id);
+        if (habitacion != null) {
+            habitacion.setPrecio(nuevoPrecio);
+            habitacionService.guardar(habitacion);
+            return ResponseEntity.ok("Precio de la habitación actualizado correctamente");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
