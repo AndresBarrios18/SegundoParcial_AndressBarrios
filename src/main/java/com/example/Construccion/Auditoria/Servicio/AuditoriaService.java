@@ -8,47 +8,40 @@ package com.example.Construccion.Auditoria.Servicio;
  *
  * @author pipe2
  */
+import com.example.Construccion.Auditoria.Repository.CambioPrecioHabitacionLogRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class AuditoriaService {
-    private static AuditoriaService instance;
 
-    private Map<String, Integer> errorCountMap = new HashMap<>();
+    private final CambioPrecioHabitacionLogRepository cambioPrecioHabitacionLogRepository;
 
-    private AuditoriaService() {}
-
-    public static AuditoriaService getInstance() {
-        if (instance == null) {
-            synchronized (AuditoriaService.class) {
-                if (instance == null) {
-                    instance = new AuditoriaService();
-                }
-            }
-        }
-        return instance;
+    @Autowired
+    public AuditoriaService(CambioPrecioHabitacionLogRepository cambioPrecioHabitacionLogRepository) {
+        this.cambioPrecioHabitacionLogRepository = cambioPrecioHabitacionLogRepository;
     }
 
-    public void registrarError(String action, String errorMessage) {
-        int count = errorCountMap.getOrDefault(action, 0);
-        errorCountMap.put(action, count + 1);
+    public void registrarIntentoCambioPrecioHabitacion(double precioAnterior, double nuevoPrecio) {
+        String mensaje = "Intento de cambio de precio de habitación. Precio anterior: " + precioAnterior +
+                ", Nuevo precio: " + nuevoPrecio + ", Fecha y hora: " + LocalDateTime.now();
         
-        if (count >= 2) {
-            registrarEnArchivo(action, errorMessage);
-        }
+        // Registrar en archivo .txt localmente
+        registrarEnArchivo(mensaje);
+
+        // Generar excepción
+        throw new RuntimeException("No se permite cambiar el precio de la habitación.");
     }
 
-    private void registrarEnArchivo(String action, String errorMessage) {
-        LocalDateTime timestamp = LocalDateTime.now();
-        String logMessage = timestamp + " - " + action + ": " + errorMessage + "\n";
-        
-        try (FileWriter writer = new FileWriter("error.log", true)) {
-            writer.write(logMessage);
+    private void registrarEnArchivo(String mensaje) {
+        try {
+            FileWriter fileWriter = new FileWriter("cambio_precio_habitacion_log.txt", true);
+            fileWriter.write(mensaje + "\n");
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
